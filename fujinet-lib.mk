@@ -1,6 +1,6 @@
 # This makefile will download the specified fujinet lib for the current platform
 
-FUJINET_LIB_VERSION := 4.6.1
+FUJINET_LIB_VERSION := 4.8.2
 
 # ///////////////////////////////////////////////////////////////////////////////
 CURRENT_TARGET ?=$(TARGET)
@@ -32,7 +32,8 @@ endif
 
 	$(MKDIR) "$(FUJINET_LIB_VERSION_DIR)"
 	curl -sL $(FUJINET_LIB_DOWNLOAD_URL) -o $(FUJINET_LIB_DOWNLOAD_FILE)
-	tar -xf $(FUJINET_LIB_DOWNLOAD_FILE) -C $(FUJINET_LIB_VERSION_DIR)
+	#tar -xf $(FUJINET_LIB_DOWNLOAD_FILE) -C $(FUJINET_LIB_VERSION_DIR)
+	unzip $(FUJINET_LIB_DOWNLOAD_FILE) -d $(FUJINET_LIB_VERSION_DIR)
 endif
 
 CFLAGS += --include-dir $(FUJINET_LIB_VERSION_DIR)

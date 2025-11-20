@@ -1,40 +1,54 @@
-TARGET_EXEC ?= fcs.ddp
+TARGET=adam
+TARGET_EXEC ?= fujitzee.ddp
 
 BUILD_DIR ?= ./build
 SRC_DIRS ?= ./src
 
 CC=zcc
 AS=zcc
+SRCS := $(shell ls $(SRC_DIRS)/*.c) $(shell find $(SRC_DIRS)/adam -name *.c)
 
-SRCS := $(shell find $(SRC_DIRS) -name *.cpp -or -name *.c -or -name *.asm)
+#SRCS := $(shell find $(SRC_DIRS) -name *.cpp -or -name *.c )
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 DEPS := $(OBJS:.o=.d)
 
-CFLAGS=+coleco -subtype=adam -D__ADAM__
-LDFLAGS=+coleco -subtype=adam -o$(TARGET_EXEC) -create-app -leos
+# Required libraries.
+
+# this downloads fujinet-lib and populates FUJINET_LIB_VERSION_DIR and FUJINET_LIB_NAME
+include fujinet-lib.mk
+
+#LIBS = \
+	-L $(FUJINET_LIB_VERSION_DIR) -l:$(FUJINET_LIB_NAME)
+
+CFLAGS=+coleco -subtype=adam -D__ADAM__ -I/usr/local/share/z88dk/include/ -I./src/include/ -I$(FUJINET_LIB_VERSION_DIR)/
+
+LDFLAGS=+coleco -subtype=adam -o$(TARGET_EXEC) -create-app -leos -lsmartkeys -l$(FUJINET_LIB_VERSION_DIR)/$(FUJINET_LIB_NAME) 
+
+#fujinet
 ASFLAGS=+coleco -subtype=adam
 
 INC_DIRS := $(shell find $(SRC_DIRS) -type d)
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
-$(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
+$(BUILD_DIR)/$(TARGET_EXEC): clean .get_fujinet_lib $(OBJS)
 	$(CC) $(LDFLAGS) $(OBJS)
 
 # c source
 $(BUILD_DIR)/%.c.o: %.c
 	$(MKDIR_P) $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 # asm source
-$(BUILD_DIR)/%.asm.o: %.asm
-	$(MKDIR_P) $(dir $@)
-	$(AS) $(ASFLAGS) -c $< -o $@
+#$(BUILD_DIR)/%.asm.o: %.asm
+#	$(MKDIR_P) $(dir $@)
+#	$(AS) $(ASFLAGS) -c $< -o $@
 
 .PHONY: clean
 
 clean:
 	$(RM) -r fujilink* $(BUILD_DIR)
+	$(RM) -rf _libs
 
--include $(DEPS)
+#-include $(DEPS)
 
 MKDIR_P ?= mkdir -p

@@ -9,9 +9,12 @@
 #include "screens.h"
 #include <peekpoke.h>
 
+#include "adam/get_line.h"
+
 #define PLAYER_LIST_Y_OFFSET 5
 #define BOTTOM_PANEL_Y HEIGHT-BOTTOM_HEIGHT
 #define HELP_X WIDTH-18
+#define USE_PLATFORM_SPECIFIC_INPUT
 
 uint8_t chat[20]=""; 
 uint8_t scoreY[] =   {3,4,5,6,7,8,10,11,13,14,15,16,17,18,19,21};
@@ -912,11 +915,18 @@ bool inputFieldCycle(uint8_t x, uint8_t y, uint8_t max, char* buffer) {
     enableKeySounds();
   }
 
-  // Process any waiting keystrokes
+    // Process any waiting keystrokes
+
+#ifdef USE_PLATFORM_SPECIFIC_INPUT
+  if ((input.key = getPlatformKey()) != 0) {
+    inputField_done=0;
+#else
   if (kbhit()) {
     inputField_done=0;
     
     input.key = cgetc();
+#endif
+
 
     // Debugging - See what key was pressed
     //itoa(input.key, tempBuffer, 10);drawText(0,0, tempBuffer);

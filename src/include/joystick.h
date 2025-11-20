@@ -18,6 +18,30 @@
 #define JOY_BTN_1(v)            ((v) & 0)      /* Universally available */
 #define JOY_BTN_2(v)            ((v) & 0)      /* Second button if available */
 
+#else 
+#ifdef __ADAM__
+
+/* Argument for the joy_read function */
+#define JOY_1                   0
+#define JOY_2                   1
+
+/* Masks for joy_read */
+#define JOY_UP_MASK             0x01
+#define JOY_RIGHT_MASK          0x02
+#define JOY_DOWN_MASK           0x04
+#define JOY_LEFT_MASK           0x08
+#define JOY_BTN_1_MASK          0x10
+#define JOY_BTN_2_MASK          0x20
+
+/* Macros that evaluate the return code of joy_read */
+#define JOY_UP(v)               ((v) & JOY_UP_MASK)
+#define JOY_DOWN(v)             ((v) & JOY_DOWN_MASK)
+#define JOY_LEFT(v)             ((v) & JOY_LEFT_MASK)
+#define JOY_RIGHT(v)            ((v) & JOY_RIGHT_MASK)
+#define JOY_BTN_1(v)            ((v) & JOY_BTN_1_MASK)      /* Universally available */
+#define JOY_BTN_2(v)            ((v) & JOY_BTN_2_MASK)      /* Universally available */
+
+#endif
 #endif
 
 #endif

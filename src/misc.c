@@ -8,6 +8,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "adam/get_line.h"
 
 InputStruct input;
 unsigned char _lastJoy, _joy, _joySameCount=10;
@@ -17,6 +18,10 @@ bool _buttonReleased=true;
 #define JOY_BTN_2_MASK JOY_BTN_1_MASK
 #endif
 
+#define USE_PLATFORM_SPECIFIC_INPUT
+
+extern int getPlatformKey();
+
 void pause(unsigned char frames) {
   while(frames--)
     waitvsync();
@@ -24,8 +29,12 @@ void pause(unsigned char frames) {
 
 void clearCommonInput() {
   input.trigger=input.key=input.dirY=input.dirX=_lastJoy=_joy=_buttonReleased=0;
+#ifdef USE_PLATFORM_SPECIFIC_INPUT
+  // while(getPlatformKey());
+#else
   while (kbhit()) 
     cgetc();
+#endif
 }
 
 void readCommonInput() {
@@ -69,12 +78,17 @@ void readCommonInput() {
 
   input.key=0;
 
-  if (!kbhit())
+#ifdef USE_PLATFORM_SPECIFIC_INPUT
+  if ((input.key = getPlatformKey()) == 0)
     return;
+#else
+  if (!kbhit())
+      return;
     
   input.key = cgetc();
+#endif
 
-  switch (input.key) {
+switch (input.key) {
     case KEY_LEFT_ARROW:
     case KEY_LEFT_ARROW_2:
     case KEY_LEFT_ARROW_3:
