@@ -3,7 +3,7 @@
 #include<peekpoke.h>
 #include<stdlib.h>
 #include<stdint.h>
-#include"../fujinet-fuji.h"
+#include <fujinet-fuji.h>
 #include"../platform-specific/graphics.h"
 #include<coco.h>
 
@@ -17,7 +17,11 @@ uint16_t getTime() {
 
 void quit() {
   resetGraphics();
-  exit(0);
+
+  // Tell FujiNet to serve the game lobby on the next boot, then reset the
+  // CoCo so the FujiNet cartridge boots straight into the lobby.
+  fuji_set_boot_mode(2);
+  coldStart();
 }
 
 void housekeeping() {

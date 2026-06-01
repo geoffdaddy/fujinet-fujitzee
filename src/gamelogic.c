@@ -7,7 +7,9 @@
 #include "misc.h"
 #include "stateclient.h"
 #include "screens.h"
-#include <peekpoke.h>
+//#ifndef __WATCOMC__
+//#include <peekpoke.h>
+//#endif
 
 #include "adam/get_line.h"
 
@@ -16,7 +18,6 @@
 #define HELP_X WIDTH-18
 #define USE_PLATFORM_SPECIFIC_INPUT
 
-uint8_t chat[20]=""; 
 uint8_t scoreY[] =   {3,4,5,6,7,8,10,11,13,14,15,16,17,18,19,21};
 char* scores[]={"one","two","three","four","five","six","total","bonus","set 3","set 4","house","s run","l run","count"};
 uint8_t cursorPos, prevCursorPos, spectators, inputField_done, validX;
@@ -100,6 +101,12 @@ void renderBoardNamesMessages() {
       if (fullWidth) {
         drawLogo(0,0);
         drawTextAlt(1,4,"players");
+#if defined(__WATCOMC__) || defined(COCO3)
+        /* FUJITZEE-box bottom-right corner and score-box top-left corner
+         * land on the same cell on msdos / CoCo 3. Replace it with a thick
+         * cross so both boxes' edges visually connect through the joint. */
+        drawIcon(9, 2, 0x50);
+#endif
       }
       
     } else {
@@ -108,7 +115,7 @@ void renderBoardNamesMessages() {
       centerTextAlt(6, clientState.game.serverName);
 
       drawLine(READY_LEFT,7,16);
-      centerTextAlt(18,"press ESC for menu");  
+      centerTextAlt(18,"press " ESCAPE " for menu");  
       centerTextAlt(HEIGHT-1,"press TRIGGER/SPACE to toggle");
     }
   
@@ -540,6 +547,10 @@ void handleAnimation() {
 
     // Draw "Rolls" die if this player's turn and there are rolls left
     drawDie(ROLL_X,HEIGHT-4,clientState.game.rollsLeft+13,0,0);
+
+#ifdef __WATCOMC__
+    setHighlight(clientState.game.activePlayer, true, 0);
+#endif
   }
 }
 
